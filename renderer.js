@@ -38,7 +38,7 @@ accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ
 }).addTo(map);
 
 
-for (var i = 0; i = j; i++){
+for (var i = 0; i = app.j; i++){
 
 latlngs = app.alllatlongs[i];
 // loop to put all markers and polylines
@@ -125,11 +125,11 @@ var lonNu = longNew;
 // create a red polyline from an array of LatLng points
 var latlngs = [lat1, lon1, latNu, lonNu, lat2, lon2];
 
-app.alllatlongs.push.latlngs;
+app.alllatlongs.push(latlngs);
 
 nu = [latNu, lonNu]
 
-app.foundLatLons.push.nu;
+app.foundLatLons.push(nu);
 
 console.log(latlngs);
 
@@ -159,7 +159,7 @@ return table;
 ////////////////////////////////////////////////////////////////
 
 
-function markers(latlngs){
+function markers(latlngs){   
 
 lat1  = latlngs[0];
 lon1  = latlngs[1]; 
