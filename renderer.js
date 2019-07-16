@@ -26,6 +26,9 @@ app.ws.onmessage = function(event)
         console.log("WebSocket message received");
         app.cleanData.push(event.data);//get and concatenate the data
 
+        var progressBar = $("#bar");
+        countNumbers(progressBar);
+
         app.j++
 
         if (app.cleanData.length > 1)
@@ -47,6 +50,24 @@ function req()
         app.ws.send("0")
         console.log(app.j)
 }
+
+function countNumbers(progressBar){
+
+        var i = 0;
+
+        if(i < 100){
+
+            i = i + 1;
+
+            progressBar.css("width", i + "%");
+
+        }
+
+        // Wait for sometime before running this script again
+
+        setTimeout("countNumbers()", 100);
+
+    }
 
 
 //////////////////////////////////////////////////////////////////////////////////
