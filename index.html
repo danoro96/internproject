@@ -21,7 +21,11 @@
     <link href="justified-nav.css" rel="stylesheet">
 
     <!-- Leaflet Mapping -->
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+
+    <!--<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" 
+    crossorigin=""/>
 
     <!-- Bootstrap -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
@@ -29,10 +33,13 @@
     <!--These are my own -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.10.3/math.js"></script>
-    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-
+    <!--<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>-->
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+    integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+    crossorigin=""></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
     
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -42,7 +49,7 @@
   </head>
 
   <body>
-
+    
     <div class="container">
 
       <div class="masthead">
@@ -59,10 +66,11 @@
 
               <div id="mapping" class="tab-pane fade">
                   <h1>Mapping stuff!</h1>
-                  <div id="map"></div>
+                  <div id="mymap"></div>
                   <input type="button" id="btnEd" value="Get some GPS points and bearing" onclick="req()" />
                   <input type="button" id="btnEd" value="Plot the final points" onclick="mapping()" />  
                   <p>Here you can see the location we found </p>
+                  
               </div>
             
 
