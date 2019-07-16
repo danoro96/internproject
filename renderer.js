@@ -9,6 +9,7 @@ var app = {
     alllatlongs   : [],
     directions    : [],
     foundLatLons  : [],
+    map           : L.map('mymap').setView([0, 0], 15)
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,7 +30,7 @@ app.ws.onmessage = function(event)
 
         if (app.cleanData.length > 1)
         { 
-                app.retGPS = getData(app.cleanData, app.j);      // Analize the data and plot
+                getData(app.cleanData, app.j);      // Analize the data and plot
         }
 }
 
@@ -106,21 +107,36 @@ function getData(cleanData, j)
         app.foundLatLons.push(nu);
 
         console.log(app.foundLatLons);
+
+        app.retGPS = [lat1, lon1];
 }
 
 ///////////////////////////////////////////////////////////////////
-
-function mapping(){
+function passData(){
         // Leaflet Map Setup
-        map = new L.map('map',{center: [app.retGPS[0], app.retGPS[1]], zoom:15});
+        
+        //app.map = L.map('mymap').setView([app.retGPS[0], app.retGPS[1]], 15);
+        // Putting all of it into the tables
 
+        document.getElementById('gpsData')
+                .appendChild(populateTable(null, 3, app.j, app.alllatlongs)); 
+
+        document.getElementById('directionData')
+                .appendChild(populateTable(null, 3, app.j, app.direcDat));  
+
+       document.getElementById('mymap').appendChild(mapping());
+
+}
+function mapping(){
+
+        app.map.setView([app.retGPS[0], app.retGPS[1]])        
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
         {
                 attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                 maxZoom: 50,
                 id: 'mapbox.streets',
                 accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
-        }).addTo(map);
+        }).addTo(app.map);
 
         // Not sure if I need this...
         // for (var i = 0; i = app.foundLatLons.length; i++)
@@ -144,22 +160,18 @@ function mapping(){
         var array = [];
 
         for (var i = 0; i < app.foundLatLons.length; i++) {
+                var item = app.foundLatLons[i]
 
-                marker = new L.marker([app.foundLatLons[i]]);
+                console.log(item[0])
+                console.log(item[1])
+                var lat = parseFloat(item[0]);
+                var lng = parseFloat(item[1]);
+                console.log(typeof lat);
+                console.log(typeof lng);
 
-                array.push(marker);
+                L.marker([lat, lng]).addTo(app.map);
         }
-
-        markers.addLayers(array);
-
-        // Putting all of it into the tables
-
-        document.getElementById('gpsData')
-                .appendChild(populateTable(null, 3, app.j, app.alllatlongs)); 
-
-        document.getElementById('directionData')
-                .appendChild(populateTable(null, 3, app.j, app.direcDat));  
-
+        return app.map
 }
 
 ////////////////////////////////////////////////////////////////
