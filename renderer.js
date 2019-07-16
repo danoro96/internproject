@@ -1,5 +1,5 @@
 // Daniel Castillo formatted by Donald Collett
-// Leaflet Map in Electron
+// Leaflet Map in Electron ish
 
 var app = {
     cleanData     : [],
@@ -11,7 +11,9 @@ var app = {
     foundLatLons  : [],
 };
 
-///////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Websocket part of the code
+//////////////////////////////////////////////////////////////////////////////
 
 app.ws.onopen = function(event)
 {
@@ -35,6 +37,8 @@ app.ws.onclose = function(event)
 {
         console.log('connection closed')
 }
+
+//////////////////////////////////////////////////////////////////////////////////
 
 function req()
 {
@@ -97,15 +101,65 @@ function getData(cleanData, j)
 
         app.alllatlongs.push(latlngs);
 
-        console.log(app.alllatlongs)
-
         nu = [latNu, lonNu]
 
         app.foundLatLons.push(nu);
 
-        //console.log(latlngs);
+        console.log(app.foundLatLons);
+}
 
-        return latlngs
+///////////////////////////////////////////////////////////////////
+
+function mapping(){
+        // Leaflet Map Setup
+        map = new L.map('map',{center: [app.retGPS[0], app.retGPS[1]], zoom:15});
+
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
+        {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 50,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
+        }).addTo(map);
+
+        // Not sure if I need this...
+        // for (var i = 0; i = app.foundLatLons.length; i++)
+        // {
+        //         console.log(app.foundLatLons)
+        //         var latlngs = [];
+
+        //                 for ( var j = 0; j < app.foundLatLons.length; j++)
+        //                 {
+        //                         for ( var k = 0; k< app.foundLatLons[j].length; k++)
+        //                         {
+        //                                 latlngs.push(app.foundLatLons[j][k]);
+        //                         }
+        //                 }
+
+                
+
+        //         }
+
+        // Actual plotting
+        var array = [];
+
+        for (var i = 0; i < app.foundLatLons.length; i++) {
+
+                marker = new L.marker([app.foundLatLons[i]]);
+
+                array.push(marker);
+        }
+
+        markers.addLayers(array);
+
+        // Putting all of it into the tables
+
+        document.getElementById('gpsData')
+                .appendChild(populateTable(null, 3, app.j, app.alllatlongs)); 
+
+        document.getElementById('directionData')
+                .appendChild(populateTable(null, 3, app.j, app.direcDat));  
+
 }
 
 ////////////////////////////////////////////////////////////////
@@ -128,59 +182,4 @@ function populateTable(table, rows, cells, content)
                         table.appendChild(row);
                 }
         return table;
-}
-
-////////////////////////////////////////////////////////////////
-
-
-function markers(latlngs)
-{   
-        var lat1  = latlngs[0];
-        var lon1  = latlngs[1]; 
-        var latNu = latlngs[2];  
-        var lonNu = latlngs[3]; 
-        var lat2  = latlngs[4];
-        var lon2  = latlngs[5];
-
-        // Setting the markers 
-        L.marker([lat1, lon1]).addTo(map); // marker 1
-        L.marker([lat2, lon2]).addTo(map); // marker 2
-        L.marker([latNu, lonNu]).addTo(map); // marker 3
-}
-
-////////////////////////////////////////////////////////////////
-
-function polyline(latlngs)
-{
-        latlngs = [[latlngs[0], latlngs[1]], [latlngs[2], latlngs[3]], [latlngs[4], latlngs[5]]];
-
-        // Creating the line
-        L.polyline(latlngs, {color: 'red'}).addTo(map);
-
-        // Getting the map to shoe exactly the area where the points are
-        //map.fitBounds(polyline.getBounds());
-}
-
-///////////////////////////////////////////////////////////////////
-function mapping(){
-        // Leaflet Map Setup
-        map = new L.map('map',{center: [app.retGPS[0], app.retGPS[1]], zoom:15});
-
-        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
-        {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                maxZoom: 50,
-                id: 'mapbox.streets',
-                accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
-        }).addTo(map);
-
-        // Putting all of it into the tables
-
-        document.getElementById('gpsData')
-                .appendChild(populateTable(null, 3, app.j, app.alllatlongs)); 
-
-        document.getElementById('directionData')
-                .appendChild(populateTable(null, 3, app.j, app.direcDat));
-
-        }
 }
