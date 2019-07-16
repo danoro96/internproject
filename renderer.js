@@ -28,50 +28,6 @@ app.ws.onmessage = function(event)
         if (app.cleanData.length > 1)
         { 
                 app.retGPS = getData(app.cleanData, app.j);      // Analize the data and plot
-
-                // Leaflet Map Setup
-                map = new L.map('map',{center: [app.retGPS[0], app.retGPS[1]], zoom:15});
-
-                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
-                {
-                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-                        maxZoom: 50,
-                        id: 'mapbox.streets',
-                        accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
-                }).addTo(map);
-
-
-                for (var i = 0; i = app.alllatlongs.length; i++)
-                {
-                        console.log(app.alllatlongs)
-                        var latlngs = [];
-
-                        for ( var j = 0; j < app.alllatlongs.length; j++)
-                        {
-                                for ( var k = 0; k< app.alllatlongs[j].length; k++)
-                                {
-                                        latlngs.push(app.alllatlongs[j][k]);
-                                }
-                        }
-                        console.log(latlngs);
-                        // loop to put all markers and polylines
-                        // Here go the markers
-
-                        markers(latlngs);
-
-                        // Here go the polylines
-
-                        polyline(latlngs);
-
-                        // Putting all of it into the tables
-
-                        document.getElementById('gpsData')
-                                .appendChild(populateTable(null, 3, app.j, app.alllatlongs)); 
-
-                        document.getElementById('directionData')
-                                .appendChild(populateTable(null, 3, app.j, app.direcDat));
-
-                }
         }
 }
 
@@ -84,7 +40,7 @@ function req()
 {
         console.log("sent")
         app.ws.send("0")
-        // console.log("after")
+        console.log(app.j)
 }
 
 
@@ -103,8 +59,8 @@ function getData(cleanData, j)
         var long = parseFloat(cleanData2[1]); // at 1
 
 
-        var angleTru1 = parseFloat(cleanData1[6]); // at 10
-        var angleTru2 = parseFloat(cleanData2[6]);  // at 10
+        var angleTru1 = parseFloat(cleanData1[10]); // at 10
+        var angleTru2 = parseFloat(cleanData2[10]);  // at 10
 
         var lineArray = [];
         var angleArray = [];
@@ -203,4 +159,28 @@ function polyline(latlngs)
 
         // Getting the map to shoe exactly the area where the points are
         //map.fitBounds(polyline.getBounds());
+}
+
+///////////////////////////////////////////////////////////////////
+function mapping(){
+        // Leaflet Map Setup
+        map = new L.map('map',{center: [app.retGPS[0], app.retGPS[1]], zoom:15});
+
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
+        {
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                maxZoom: 50,
+                id: 'mapbox.streets',
+                accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
+        }).addTo(map);
+
+        // Putting all of it into the tables
+
+        document.getElementById('gpsData')
+                .appendChild(populateTable(null, 3, app.j, app.alllatlongs)); 
+
+        document.getElementById('directionData')
+                .appendChild(populateTable(null, 3, app.j, app.direcDat));
+
+        }
 }
