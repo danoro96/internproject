@@ -28,6 +28,14 @@ import numpy
 
 import histo
 
+class obj:
+
+    points = []
+    angles   = []
+
+tojs = obj()
+
+
 # open serial port
 ser = serial.Serial("/dev/ttyUSB0", 9600)
 
@@ -57,29 +65,61 @@ def serialConn():
 
 # initialize web socket and send data
 async def hello(websocket, path):
+
     print('I am connected..........')
 
     while True:
 
-        await websocket.recv()
+        ans = await websocket.recv()
 
         print('received')
-        #Run Gnuradio
-        # s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
-        # time.sleep(10)
-        # s.kill()
 
-        #histogram
-        avg = histo.doitboi()
-        #print(avg)
-        separatedData = serialConn()
-        separatedData = separatedData + (str(avg))
-        separatedData.encode()
-        await websocket.send(separatedData)
+        if ans == 0:
+            # if we receive a 0 from the web socket we take data
 
-        print(separatedData)
-        print('The message has been sent..........')
+            #Run Gnuradio
+            # s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
+            # time.sleep(10)
+            # s.kill()
 
+            #histogram
+            avg = histo.doitboi()
+
+            separatedData = serialConn()
+
+            separatedData = separatedData.split(",")
+
+            tojs.points.push([separatedData[0], separatedData[1]])
+
+            # add the compensation with respect to north
+            northangle = separatedData[9]
+
+            realangle = northangle + avg
+
+            if realangle > 360:
+                realangle  = realangle - 360
+
+            tojs.angles.push(realangle)
+
+
+        elif ans == 1:
+            # If we receive a 2 then we send data and plot 
+            #Here we find the intersecting point
+            finalPt = histo.intersect(tojs.points, tojs.angles)
+
+            # putting the found point at the end so we know where it is
+            finalPts = tojs.points.append(finalPt)
+        
+
+            finalPts.encode()
+            await websocket.send(finalPts)
+
+        elif ans == 2:
+            # if we receive a 3 then we send the drone
+
+            a = 5
+
+            return a
 
 
 start_server = websockets.serve(hello, 'localhost', 8000)
@@ -87,8 +127,3 @@ start_server = websockets.serve(hello, 'localhost', 8000)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
 
-''' Here we would like to receive the data again and send the data to the drone to run automatically'''
-# 1. receive the data
-# 2. process the data
-# 3. tell the drone what to do
-# 4. get some type of confirmation???

@@ -24,17 +24,7 @@ app.ws.onopen = function(event)
 app.ws.onmessage = function(event) 
 { 
         console.log("WebSocket message received");
-        app.cleanData.push(event.data);//get and concatenate the data
-
-        var progressBar = $("#bar");
-        countNumbers(progressBar);
-
-        app.j++
-
-        if (app.cleanData.length > 1)
-        { 
-                getData(app.cleanData, app.j);      // Analize the data and plot
-        }
+        mapping(event.data);//get and concatenate the data
 }
 
 app.ws.onclose = function(event)
@@ -44,12 +34,29 @@ app.ws.onclose = function(event)
 
 //////////////////////////////////////////////////////////////////////////////////
 
-function req()
+function req0()
 {
         console.log("sent")
         app.ws.send("0")
-        console.log(app.j)
+        var progressBar = $("#bar");
+        countNumbers(progressBar);
 }
+
+function req1()
+{
+        console.log("sent")
+        app.ws.send("1")
+        
+}
+
+function req2()
+{
+        console.log("sent")
+        app.ws.send("2")
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////
 
 function countNumbers(progressBar){
 
@@ -69,70 +76,8 @@ function countNumbers(progressBar){
 
     }
 
-
-//////////////////////////////////////////////////////////////////////////////////
-
-function getData(cleanData, j)
-{
-        var cleanData1 = cleanData[j-2].split(",");
-        var cleanData2 = cleanData[1].split(",");
-
-
-        var  gpsLat = parseFloat(cleanData1[0]); // at 0
-        var  gpsLong = parseFloat(cleanData1[1]); // at 1
-
-        var lat = parseFloat(cleanData2[0]); // at 0
-        var long = parseFloat(cleanData2[1]); // at 1
-
-
-        var angleTru1 = parseFloat(cleanData1[10]); // at 10
-        var angleTru2 = parseFloat(cleanData2[10]);  // at 10
-
-        var lineArray = [];
-        var angleArray = [];
-
-        // Put both the angle variables into an array for later use
-        angleArray.push(math.tan(math.unit(angleTru1, 'deg')));
-        angleArray.push(math.tan(math.unit(angleTru2, 'deg')));
-
-        // Start analysis for position of thrid GPS point
-
-        lineArray.push(angleArray[0]*(gpsLong-long) + (gpsLat-lat));
-
-        var a = [[angleArray[0], -1], [angleArray[1], -1]];
-        var b = [[lineArray[0]], [0]];
-        var coords = math.usolve(a, b);
-
-        var cor0 = coords[0];
-        var cor1 = coords[1];
-
-        var latNew = math.sum([lat, cor1]);
-        var longNew = math.sum([long, cor0]);
-
-        // Variable Setup for plot
-
-        var lat1  = lat;
-        var lon1  = long;
-        var lat2  = gpsLat;
-        var lon2  = gpsLong;
-        var latNu = latNew;
-        var lonNu = longNew;
-
-        // create a red polyline from an array of LatLng points
-        var latlngs = [lat1, lon1, latNu, lonNu, lat2, lon2];
-
-        app.alllatlongs.push(latlngs);
-
-        nu = [latNu, lonNu]
-
-        app.foundLatLons.push(nu);
-
-        console.log(app.foundLatLons);
-
-        app.retGPS = [lat1, lon1];
-}
-
 ///////////////////////////////////////////////////////////////////
+
 function passData(){
         // Leaflet Map Setup
         
@@ -149,7 +94,7 @@ function passData(){
 
 }
 
-function mapping(){
+function mapping(points){
 
         app.map.setView([app.retGPS[0], app.retGPS[1]], 15)        
         
@@ -161,39 +106,25 @@ function mapping(){
                 accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
         }).addTo(app.map);
 
-        // Not sure if I need this...
-        // for (var i = 0; i = app.foundLatLons.length; i++)
-        // {
-        //         console.log(app.foundLatLons)
-        //         var latlngs = [];
+        var item = points[points.length - 1]
 
-        //                 for ( var j = 0; j < app.foundLatLons.length; j++)
-        //                 {
-        //                         for ( var k = 0; k< app.foundLatLons[j].length; k++)
-        //                         {
-        //                                 latlngs.push(app.foundLatLons[j][k]);
-        //                         }
-        //                 }
+        var lat = parseFloat(item[0]);
+        var lng = parseFloat(item[1]);
 
-                
-
-        //         }
+        L.marker([lat, lng], {color: 'red'}).addTo(app.map); // plotting thw lasdt point a different color
 
         // Actual plotting
         var array = [];
 
-        for (var i = 0; i < app.foundLatLons.length; i++) {
-                var item = app.foundLatLons[i]
+        for (var i = 0; i < points.length - 1; i++) {
+                var item = points[i]
 
-                console.log(item[0])
-                console.log(item[1])
                 var lat = parseFloat(item[0]);
                 var lng = parseFloat(item[1]);
-                console.log(typeof lat);
-                console.log(typeof lng);
 
-                L.marker([lat, lng]).addTo(app.map);
+                L.marker([lat, lng], {color: 'blue'}).addTo(app.map);
         }
+        
         return app.map
 }
 

@@ -210,3 +210,37 @@ def doitboi():
     # plt.ylabel('Normal Distribution')
     # plt.savefig("integrate_normal_distribution.png")
     # plt.show()
+
+    
+def intersect(p0,a0):
+       
+    """
+    :param p0 : Nx2 (x,y) position coordinates
+    :param a0 : angles in degrees for each point in p0
+    :return: least squares intersection point of N lines
+    """
+
+    ang = a0 # create list of angles
+
+    # create direction vectors with magnitude = 1
+    n = []
+    for a in ang:
+        n.append([np.cos(np.radians(a)), np.sin(np.radians(a))])
+    
+    print(n)
+
+    pos = p0 # create list of points
+    n = np.array(n)
+
+    # generate the array of all projectors
+    nnT = np.array([np.outer(nn,nn) for nn in n ])
+    ImnnT = np.eye(len(pos[0]))-nnT # orthocomplement projectors to n
+
+    # now generate R matrix and q vector
+    R = np.sum(ImnnT,axis=0)
+    q = np.sum(np.array([np.dot(m,x) for m,x in zip(ImnnT,pos)]),axis=0)
+
+    p = np.linalg.lstsq(R,q,rcond=None)[0]
+
+    # and solve the least squares problem for the intersection point p
+    return p

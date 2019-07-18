@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "mathjs": "^6.0.2",
+    "regression": "^2.0.1",
     "serialport": "^7.1.5",
     "socketio": "^1.0.0",
     "yarn": "^1.16.0"
