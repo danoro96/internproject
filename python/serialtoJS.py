@@ -37,7 +37,7 @@ tojs = obj()
 
 
 # open serial port
-ser = serial.Serial("/dev/ttyUSB0", 9600)
+ser = serial.Serial("/dev/ttyACM0", 9600)
 
 
 
@@ -73,7 +73,7 @@ async def hello(websocket, path):
         ans = await websocket.recv()
 
         print('received')
-
+        
         if ans == 0:
             # if we receive a 0 from the web socket we take data
 

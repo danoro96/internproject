@@ -9,7 +9,8 @@ var app = {
     alllatlongs   : [],
     directions    : [],
     foundLatLons  : [],
-    map           : L.map('mymap').setView([0, 0], 15)
+    map           : L.map('mymap').setView([0, 0], 15),
+    progressBar   : $("#bar")
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,11 +69,28 @@ function countNumbers(progressBar){
 
             progressBar.css("width", i + "%");
 
+        console.log(app.j)
+        countNumbers();
+}
+
+function countNumbers(){
+        //console.log("In count numbers");
+        var element = document.getElementById("myprogressBar");
+        var width = 1;
+        var identity = setInterval(scene, 100);
+        function scene(){
+                if (width >= 100){
+                        clearInterval(identity);
+                } else {
+                        width++;
+                        element.style.width = width + '%';
+                        element.innerHTML = width * 1 + '%'; //adds number to progress bar
+                }
         }
 
         // Wait for sometime before running this script again
 
-        setTimeout("countNumbers()", 100);
+        //setTimeout("countNumbers()", 1);
 
     }
 
@@ -124,7 +142,7 @@ function mapping(points){
 
                 L.marker([lat, lng], {color: 'blue'}).addTo(app.map);
         }
-        
+
         return app.map
 }
 
