@@ -29,7 +29,7 @@ import numpy
 import histo
 
 # open serial port
-ser = serial.Serial("/dev/ttyUSB0", 9600)
+ser = serial.Serial("/dev/ttyACM0", 9600)
 
 
 
@@ -65,14 +65,18 @@ async def hello(websocket, path):
 
         print('received')
         #Run Gnuradio
-        # s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
-        # time.sleep(10)
-        # s.kill()
+        s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
+        time.sleep(10)
+        s.kill()
 
         #histogram
         avg = histo.doitboi()
         #print(avg)
         separatedData = serialConn()
+        print(separatedData)
+        # avg = float(separatedData[9]) + avg
+        # if (avg > 360): 
+        #     avg = avg - 360
         separatedData = separatedData + (str(avg))
         separatedData.encode()
         await websocket.send(separatedData)

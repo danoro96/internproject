@@ -9,7 +9,8 @@ var app = {
     alllatlongs   : [],
     directions    : [],
     foundLatLons  : [],
-    map           : L.map('mymap').setView([0, 0], 15)
+    map           : L.map('mymap').setView([0, 0], 15),
+    progressBar   : $("#bar")
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,8 +27,7 @@ app.ws.onmessage = function(event)
         console.log("WebSocket message received");
         app.cleanData.push(event.data);//get and concatenate the data
 
-        var progressBar = $("#bar");
-        countNumbers(progressBar);
+        
 
         app.j++
 
@@ -49,23 +49,27 @@ function req()
         console.log("sent")
         app.ws.send("0")
         console.log(app.j)
+        countNumbers();
 }
 
-function countNumbers(progressBar){
-
-        var i = 0;
-
-        if(i < 100){
-
-            i = i + 1;
-
-            progressBar.css("width", i + "%");
-
+function countNumbers(){
+        //console.log("In count numbers");
+        var element = document.getElementById("myprogressBar");
+        var width = 1;
+        var identity = setInterval(scene, 100);
+        function scene(){
+                if (width >= 100){
+                        clearInterval(identity);
+                } else {
+                        width++;
+                        element.style.width = width + '%';
+                        element.innerHTML = width * 1 + '%'; //adds number to progress bar
+                }
         }
 
         // Wait for sometime before running this script again
 
-        setTimeout("countNumbers()", 100);
+        //setTimeout("countNumbers()", 1);
 
     }
 
@@ -75,12 +79,12 @@ function countNumbers(progressBar){
 function getData(cleanData, j)
 {
         var cleanData1 = cleanData[j-2].split(",");
-        var cleanData2 = cleanData[1].split(",");
+        var cleanData2 = cleanData[j-1].split(",");
 
 
         var  gpsLat = parseFloat(cleanData1[0]); // at 0
         var  gpsLong = parseFloat(cleanData1[1]); // at 1
-
+        
         var lat = parseFloat(cleanData2[0]); // at 0
         var long = parseFloat(cleanData2[1]); // at 1
 
@@ -88,6 +92,9 @@ function getData(cleanData, j)
         var angleTru1 = parseFloat(cleanData1[10]); // at 10
         var angleTru2 = parseFloat(cleanData2[10]);  // at 10
 
+        for(var i = 0; i < cleanData.length;i++){
+                console.log(typeof cleanData[i]);
+        }
         var lineArray = [];
         var angleArray = [];
 

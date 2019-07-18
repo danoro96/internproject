@@ -70,18 +70,18 @@
                   <input type="button" id="btnEd" value="Get some GPS points and bearing" onclick="req()" />
                   <input type="button" id="btnEd" value="Plot the final points" onclick="mapping()" />  
                   <p>Here you can see the location we found </p>
-                      <p>Why the Hell is there a task bar here</p>
-
-                          <div class="progress">
-
-                              <div class="progress-bar" id="bar">
-
-                                  <span class="sr-only">60% Complete</span>
-                                  
-                              </div>     
-
+                      <p>Why the Hell is there a task bar here</p> 
+                          <div id="Progress_Status" style = 
+                          "width: 50%; 
+                          background-color: #ddd;"> 
+                            <div id="myprogressBar" style = 
+                            "width: 0%; 
+                            height: 35px; 
+                            background-color: #4CAF50; 
+                            text-align: center; 
+                            line-height: 32px; 
+                            color: black;"></div> 
                           </div>
-                          
               </div>
             
 
