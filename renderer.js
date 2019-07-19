@@ -68,7 +68,7 @@ function countNumbers(progressBar){
             i = i + 1;
 
             progressBar.css("width", i + "%");
-
+        }
         console.log(app.j)
         countNumbers();
 }

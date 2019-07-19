@@ -1,0 +1,10 @@
+#!/bin/bash
+
+
+python3 python/serialtoJS.py
+
+xdg-open index.html
+
+
+
+
