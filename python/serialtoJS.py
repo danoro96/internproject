@@ -28,6 +28,9 @@ import numpy
 
 import histo
 
+import codecs
+
+
 class obj:
 
     points = []
@@ -35,9 +38,11 @@ class obj:
 
 tojs = obj()
 
-
+codecs.open('index.html', 'r')
 # open serial port
 ser = serial.Serial("/dev/ttyACM0", 9600)
+
+
 
 
 
