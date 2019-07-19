@@ -28,21 +28,14 @@ import numpy
 
 import histo
 
-import codecs
-
-
 class obj:
+    def __init__(self):
+        self.points = []
+        self.angles = []
 
-    points = []
-    angles   = []
 
-tojs = obj()
-
-codecs.open('index.html', 'r')
 # open serial port
 ser = serial.Serial("/dev/ttyACM0", 9600)
-
-
 
 
 
@@ -70,56 +63,67 @@ def serialConn():
 
 # initialize web socket and send data
 async def hello(websocket, path):
-
+    tojs = None
+    tojs = obj()
     print('I am connected..........')
 
     while True:
 
         ans = await websocket.recv()
 
-        print('received')
+        print('received ', ans)
         
-        if ans == 0:
+        if ans == '0':
             # if we receive a 0 from the web socket we take data
 
             #Run Gnuradio
-            # s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
-            # time.sleep(10)
-            # s.kill()
+            s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
+            time.sleep(10)
+            s.kill()
 
             #histogram
             avg = histo.doitboi()
 
             separatedData = serialConn()
-
+            print(separatedData)
             separatedData = separatedData.split(",")
 
-            tojs.points.push([separatedData[0], separatedData[1]])
+            tojs.points.append(float(separatedData[0]))
+            tojs.points.append(float(separatedData[1]))
+            print('first index=',separatedData[0], 'second index=',separatedData[1])
 
             # add the compensation with respect to north
-            northangle = separatedData[9]
+            print(separatedData)
+            northangle = float(separatedData[9])
 
             realangle = northangle + avg
 
-            if realangle > 360:
-                realangle  = realangle - 360
+            if realangle > 360.0:
+                realangle  = realangle - 360.0
 
-            tojs.angles.push(realangle)
+            tojs.angles.append(realangle)
+            print('calc angle=', realangle)
 
 
-        elif ans == 1:
+
+        elif ans == '1':
             # If we receive a 2 then we send data and plot 
             #Here we find the intersecting point
+            print('locations=',tojs.points)
+            print('angles=', tojs.angles)
             finalPt = histo.intersect(tojs.points, tojs.angles)
+            print('intersect=',finalPt)
 
             # putting the found point at the end so we know where it is
-            finalPts = tojs.points.append(finalPt)
-        
+            tojs.points.append(finalPt[0])
+            tojs.points.append(finalPt[1])
 
-            finalPts.encode()
+            finalPts = str(tojs.points)
+            print(finalPts)
+
             await websocket.send(finalPts)
 
-        elif ans == 2:
+        elif ans == '2':
             # if we receive a 3 then we send the drone
 
             a = 5

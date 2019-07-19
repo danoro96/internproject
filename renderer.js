@@ -122,26 +122,24 @@ function mapping(points){
                 maxZoom: 50,
                 id: 'mapbox.streets',
                 accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
-        }).addTo(app.map);
+        }).addTo(app.map)
 
-        var item = points[points.length - 1]
+        lastindex = points.length - 1;
+        var lat = parseFloat(points[lastindex]);
+        var lng = parseFloat(points[lastindex - 1]);
 
-        var lat = parseFloat(item[0]);
-        var lng = parseFloat(item[1]);
-
-        L.marker([lat, lng], {color: 'red'}).addTo(app.map); // plotting thw lasdt point a different color
+        L.marker([lat, lng], {color: 'red'}).addTo(app.map); // plotting the last point a different color
 
         // Actual plotting
-        var array = [];
+        //var array = [];
 
-        for (var i = 0; i < points.length - 1; i++) {
-                var item = points[i]
+        // for (var i = 0; i < points.length - 1; i++) {
+ 
+        //         var lat = parseFloat(points[i]);
+        //         var lng = parseFloat(point[i+1]);
 
-                var lat = parseFloat(item[0]);
-                var lng = parseFloat(item[1]);
-
-                L.marker([lat, lng], {color: 'blue'}).addTo(app.map);
-        }
+        //         L.marker([lat, lng], {color: 'blue'}).addTo(app.map);
+        // }
 
         return app.map
 }

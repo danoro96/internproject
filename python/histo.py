@@ -212,35 +212,39 @@ def doitboi():
     # plt.show()
 
     
-def intersect(p0,a0):
-       
-    """
-    :param p0 : Nx2 (x,y) position coordinates
-    :param a0 : angles in degrees for each point in p0
-    :return: least squares intersection point of N lines
-    """
+def intersect(p, ang):
+ # assumes angle in degrees
+    n = np.zeros((len(ang), 2)) # Create empty N x 2 array for direction vectors where N is amount of line/angles
+     # create empty N x 2 array for positions
 
-    ang = a0 # create list of angles
+    P0 = np.array([p[0::2], p[1::2]]).transpose()
 
-    # create direction vectors with magnitude = 1
-    n = []
-    for a in ang:
-        n.append([np.cos(np.radians(a)), np.sin(np.radians(a))])
-    
-    print(n)
+    for i in range(len(ang)): # fill n array with values in radians
+        for j in range(2):
+            if j == 0:
+                n[i][j] = np.sin(ang[i] * np.pi / 180.0)
+            if j == 1:
+                n[i][j] = np.cos(ang[i] * np.pi / 180.0)
 
-    pos = p0 # create list of points
-    n = np.array(n)
 
-    # generate the array of all projectors
-    nnT = np.array([np.outer(nn,nn) for nn in n ])
-    ImnnT = np.eye(len(pos[0]))-nnT # orthocomplement projectors to n
+    #create an array of projectors(perpendicular distance from a point to a line), or the equation I - n*n^T 
+    projs = np.eye(n.shape[1]) - n[:,:,np.newaxis]*n[:,np.newaxis]
 
-    # now generate R matrix and q vector
-    R = np.sum(ImnnT,axis=0)
-    q = np.sum(np.array([np.dot(m,x) for m,x in zip(ImnnT,pos)]),axis=0)
+    #create R matrix and q vector for equation Rp = q where p is intersection point
+    R = projs.sum(axis=0)
+    q = (projs @ P0[:,:,np.newaxis]).sum(axis=0)
 
-    p = np.linalg.lstsq(R,q,rcond=None)[0]
+    #least square for point p from R matrix and q vector p: Rp = q
+    p = np.linalg.lstsq(R,q)[0]
 
-    # and solve the least squares problem for the intersection point p
-    return p
+    x = float(p[0])
+
+    y = float(p[1])
+
+    ret = [x , y]
+
+    return ret # in format 1 X 2 [y][x]
+
+
+# if __name__ == "__main__":
+#    print (intersect([0,1,0,2], [45, 315]))
