@@ -18,7 +18,7 @@ import numpy as np
 
 import scipy
 
-import drone_goto
+#import drone_goto
 
 import os
 
@@ -36,10 +36,10 @@ class obj:
         self.angles = []
 
 
-# open serial port
-#ser = serial.Serial("/dev/ttyUSB0", 9600)
-
-
+#open serial port
+ser = serial.Serial()
+ser.baudrate = 9600
+ser.port = "/dev/ttyACM1"
 
 # this changes stuff from binary to ASCII
 # currently takes in a file but we can chage it so that it takes in something else
@@ -52,15 +52,30 @@ class obj:
 
 # define function that will be used later inside of the websocket function
 def serialConn(): 
-    
+    if  not ser.is_open:
+        ser.open()
     # read data from serial bus
+    print("serialConn() called")
     rawData = ser.readline()
-
+    print('Getting GPS Lock....') 
     # strip formatting characters
     cleanData = rawData.decode().strip('\r\n')
     cleanData = cleanData.lstrip("0")
+    separatedData = cleanData.split(",")
+    
+    while(len(separatedData) < 11):
+        # read data from serial bus
+        print("Separated data < 11: ", separatedData)
+        rawData = ser.readline()
+        print('Getting GPS Lock....')
+        # strip formatting characters
+        cleanData = rawData.decode().strip('\n')
+        cleanData = cleanData.lstrip("0")
+        separatedData = cleanData.split(",")
 
-    return cleanData
+    print("Separated Data: ", separatedData)
+    print('GPS Locked')
+    return separatedData
 
 
 # initialize web socket and send data
@@ -71,7 +86,8 @@ async def hello(websocket, path):
     print('I am connected..........')
 
     while True:
-        print("Starting server...")
+        print("Running ...")
+
         ans = await websocket.recv()
 
         print('received ', ans)
@@ -80,17 +96,21 @@ async def hello(websocket, path):
             # if we receive a 0 from the web socket we take data
 
             #Run Gnuradio
-            s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
+            s = subprocess.Popen(["python2", "music.py"])
             time.sleep(10)
             s.kill()
 
             #histogram
             avg = histo.doitboi()
 
-            separatedData = serialConn()
-            print(separatedData)
-            separatedData = separatedData.split(",")
+            print("calling serialConn()")
 
+            separatedData = None
+
+            separatedData = serialConn()
+
+            print(separatedData)
+            
             tojs.points.append(float(separatedData[0]))
             tojs.points.append(float(separatedData[1]))
             print('first index=',separatedData[0], 'second index=',separatedData[1])
@@ -106,6 +126,9 @@ async def hello(websocket, path):
 
             tojs.angles.append(realangle)
             print('calc angle=', realangle)
+            ser.reset_input_buffer()
+            ser.reset_output_buffer()
+            ser.close()
 
 
 
@@ -136,7 +159,7 @@ async def hello(websocket, path):
             drone_goto.drone_goto('COM13',57600,tojs.points[-2],tojs.points[-1], float(drone[3]))
 
 
-start_server = websockets.serve(hello, 'localhost', 8000)
+start_server = websockets.serve(hello, 'localhost', 8050)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

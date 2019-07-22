@@ -4,7 +4,7 @@
 var app = {
     cleanData     : [],
     retGPS        : [],
-    ws            : new WebSocket('ws://localhost:8000'),
+    ws            : new WebSocket('ws://localhost:8050'),
     j             : 0,
     alllatlongs   : [],
     directions    : [],
@@ -114,7 +114,12 @@ function passData(){
 
 function mapping(points){
 
-        app.map.setView([app.retGPS[0], app.retGPS[1]], 15)        
+        points = points.split(', ');
+        lastindex = points.length - 1;
+        var lat = parseFloat(points[lastindex - 1]);
+        var lng = parseFloat(points[lastindex]);
+
+        app.map.setView([lat, lng], 15)        
         
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
         {
@@ -124,9 +129,7 @@ function mapping(points){
                 accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
         }).addTo(app.map)
 
-        lastindex = points.length - 1;
-        var lat = parseFloat(points[lastindex]);
-        var lng = parseFloat(points[lastindex - 1]);
+        
 
         L.marker([lat, lng], {color: 'red'}).addTo(app.map); // plotting the last point a different color
 
