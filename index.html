@@ -67,21 +67,25 @@
               <div id="mapping" class="tab-pane fade">
                   <h1>Mapping stuff!</h1>
                   <div id="mymap" style="width: 400px; height: 300px;"></div>
-                  <input type="button" id="btnEd" value="Get some GPS points and bearing" onclick="req()" />
-                  <input type="button" id="btnEd" value="Plot the final points" onclick="mapping()" />  
+                  <input type="button" id="btnEd" value="Get some data" onclick="req0()" />
+                  <input type="button" id="btnEd" value="Plot the data" onclick="req1()" />  
+                  <input type="button" id="btnEd" value="Release the KrakenDrone" onclick="req2()" />  
+
                   <p>Here you can see the location we found </p>
-                      <p>Why the Hell is there a task bar here</p> 
-                          <div id="Progress_Status" style = 
-                          "width: 50%; 
-                          background-color: #ddd;"> 
-                            <div id="myprogressBar" style = 
-                            "width: 0%; 
-                            height: 35px; 
-                            background-color: #4CAF50; 
-                            text-align: center; 
-                            line-height: 32px; 
-                            color: black;"></div> 
+                      <p>Why the Hell is there a task bar here</p>
+
+                          <div id="myProgress" style="background-color: lightgray">
+
+                              <div id="myprogressBar" 
+                              style="width: 0%; 
+                              height: 30px;
+                              background-color: #4CAF50;
+                              text-align: center;
+                              line-height: 30px;
+                              color: white;"></div>     
+
                           </div>
+                          
               </div>
             
 
