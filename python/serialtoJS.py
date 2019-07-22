@@ -18,6 +18,8 @@ import numpy as np
 
 import scipy
 
+import drone_goto
+
 import os
 
 import subprocess
@@ -29,14 +31,14 @@ import numpy
 import histo
 
 # open serial port
-ser = serial.Serial("/dev/ttyACM0", 9600)
+#ser = serial.Serial("/dev/ttyUSB0", 9600)
 
 
 
 # this changes stuff from binary to ASCII
 # currently takes in a file but we can chage it so that it takes in something else
 
-# !!! here we can try to implement  a different web socket that we can grab the data from Thuy's program !!!
+# !!! here we can try to implement  a different web socket that we can grab the data fromfrom Thuy's program !!!
 
 # data = scipy.fromfile(open(file), dtype=scipy.complex64)
 
@@ -56,42 +58,63 @@ def serialConn():
 
 
 # initialize web socket and send data
+
 async def hello(websocket, path):
     print('I am connected..........')
 
     while True:
 
+        
+        drone = await websocket.recv()
+        if (len(drone) > 1):
+            print('Calling script...')
+            drone.split(",")
+            print(drone)
+            #drone_goto.drone_goto('COM13',57600,38.832804, -104.801181)
+            drone_goto.drone_goto(drone[0],int(drone[1]),float(drone[2]), float(drone[3]))
+            
+            
+        else:
+            print('received')
+            
+        separatedData = "38.832804, -104.801181, 1,1,2020,0,0,0"
+        separatedData.encode()
+        await websocket.send(separatedData)
+        
+        #==============================Donnie's Code
+        
+        #separatedData = serialConn()
+        '''
         await websocket.recv()
 
         print('received')
         #Run Gnuradio
-        s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
-        time.sleep(10)
-        s.kill()
+        # s = subprocess.Popen(["python2", "music.py"], stdout = subprocess.PIPE)
+        # time.sleep(10)
+        # s.kill()
 
         #histogram
         avg = histo.doitboi()
         #print(avg)
-        separatedData = serialConn()
-        print(separatedData)
-        # avg = float(separatedData[9]) + avg
-        # if (avg > 360): 
-        #     avg = avg - 360
+        #separatedData = serialConn()
         separatedData = separatedData + (str(avg))
+        separatedData.encode()
+   
+        separatedData = "38.832804, -104.801181, 1,1,2020,0,0,0"
         separatedData.encode()
         await websocket.send(separatedData)
 
         print(separatedData)
         print('The message has been sent..........')
+        '''
 
-
-
+print("Starting server...")
 start_server = websockets.serve(hello, 'localhost', 8000)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()
 
-''' Here we would like to receive the data again and send the data to the drone to run automatically'''
+#Here we would like to receive the data again and send the data to the drone to run automatically'''
 # 1. receive the data
 # 2. process the data
 # 3. tell the drone what to do
