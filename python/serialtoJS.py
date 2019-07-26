@@ -30,16 +30,48 @@ import numpy
 
 import histo
 
+from decimal import Decimal
+
+import math
+
 class obj:
     def __init__(self):
         self.points = []
         self.angles = []
 
+def isfloat(value):
+    try: 
+        float(value)
+        return False
+    except ValueError:
+        return True
+
+def enoughdecimals(value):
+    print(value)
+    flrval = math.trunc(value)
+    print(flrval)
+    #flrval = float(flrval)
+    print(flrval)
+    decimals = value - flrval
+    print(decimals)
+    #decinum = len(str(decimals))
+    #print(decinum)
+    decimals = round(decimals, 7)
+    print(decimals)
+    if(value < 0):
+        if(decimals < 0): 
+            return False
+        else:
+            return True
+    elif(decimals > 0):
+        return False
+    else:
+        return True
 
 #open serial port
 ser = serial.Serial()
 ser.baudrate = 9600
-ser.port = "/dev/ttyACM1"
+ser.port = "/dev/ttyACM0"
 
 # this changes stuff from binary to ASCII
 # currently takes in a file but we can chage it so that it takes in something else
@@ -63,15 +95,48 @@ def serialConn():
     cleanData = cleanData.lstrip("0")
     separatedData = cleanData.split(",")
     
-    while(len(separatedData) < 11):
+    flag = True 
+    while(flag):
         # read data from serial bus
-        print("Separated data < 11: ", separatedData)
-        rawData = ser.readline()
-        print('Getting GPS Lock....')
-        # strip formatting characters
-        cleanData = rawData.decode().strip('\n')
-        cleanData = cleanData.lstrip("0")
-        separatedData = cleanData.split(",")
+        if(len(separatedData) < 11):
+            print("Separated data < 11: ", separatedData)
+            rawData = ser.readline()
+            print('Getting GPS Lock....')
+            # strip formatting characters
+            cleanData = rawData.decode().strip('\n')
+            cleanData = cleanData.lstrip("0")
+            separatedData = cleanData.split(",")
+
+        elif(isfloat(separatedData[0]) or isfloat(separatedData[1])):
+            print("Separarated Data 1 or 0 not a float: ", separatedData)
+            rawData = ser.readline()
+            print('Getting GPS Lock....')
+            # strip formatting characters
+            cleanData = rawData.decode().strip('\n')
+            cleanData = cleanData.lstrip("0")
+            separatedData = cleanData.split(",")
+
+        elif(-90 > float(separatedData[0]) > 90 or -180 > float(separatedData[1]) > 180):
+            print("Separarated Data 0 or 1 too big/small: ", separatedData)
+            rawData = ser.readline()
+            print('Getting GPS Lock....')
+            # strip formatting characters
+            cleanData = rawData.decode().strip('\n')
+            cleanData = cleanData.lstrip("0")
+            separatedData = cleanData.split(",")
+
+        elif(enoughdecimals(float(separatedData[0])) or enoughdecimals(float(separatedData[1]))):
+            print("Separarated Data 0 or 1 not enough decimal points: ", separatedData)
+            rawData = ser.readline()
+            print('Getting GPS Lock....')
+            # strip formatting characters
+            cleanData = rawData.decode().strip('\n')
+            cleanData = cleanData.lstrip("0")
+            separatedData = cleanData.split(",")
+
+        else:
+            flag = False
+
 
     print("Separated Data: ", separatedData)
     print('GPS Locked')
@@ -102,7 +167,7 @@ async def hello(websocket, path):
 
             #histogram
             avg = histo.doitboi()
-
+            print("GnuRadio calc ang: ", avg) 
             print("calling serialConn()")
 
             separatedData = None
@@ -145,6 +210,8 @@ async def hello(websocket, path):
             tojs.points.append(finalPt[1])
 
             finalPts = str(tojs.points)
+            finalPts = finalPts.strip("[]")
+
             print(finalPts)
 
             await websocket.send(finalPts)

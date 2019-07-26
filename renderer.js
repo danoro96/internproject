@@ -9,7 +9,7 @@ var app = {
     alllatlongs   : [],
     directions    : [],
     foundLatLons  : [],
-    map           : L.map('mymap').setView([0, 0], 15),
+//     map           : L.map('mymap').setView([0, 0], 15),
     progressBar   : $("#bar")
 };
 
@@ -116,10 +116,14 @@ function mapping(points){
 
         points = points.split(', ');
         lastindex = points.length - 1;
-        var lat = parseFloat(points[lastindex - 1]);
+        secondtolast = lastindex - 1;
+        var lat = parseFloat(points[secondtolast]);
         var lng = parseFloat(points[lastindex]);
 
-        app.map.setView([lat, lng], 15)        
+        //console.log(points[0]);
+
+        //app.map.setView([lat, lng], 15) 
+        map = L.map('mymap').setView([lat, lng], 15)       
         
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
         {
@@ -127,24 +131,36 @@ function mapping(points){
                 maxZoom: 50,
                 id: 'mapbox.streets',
                 accessToken: 'pk.eyJ1IjoiZGFub3JvOTYiLCJhIjoiY2p4ZGh4Zjh1MGViZzNubWY4dTRnbndpYiJ9.RlCJaOdgY9VQusXRfICljw'
-        }).addTo(app.map)
+        }).addTo(map)
 
         
 
-        L.marker([lat, lng], {color: 'red'}).addTo(app.map); // plotting the last point a different color
+        L.marker([lat, lng]).addTo(map).bindPopup('Final Location').openPopup(); // plotting the last point a different color
 
         // Actual plotting
         //var array = [];
 
-        // for (var i = 0; i < points.length - 1; i++) {
- 
-        //         var lat = parseFloat(points[i]);
-        //         var lng = parseFloat(point[i+1]);
+        var lat1 = 0;
+        var lng1 = 0;
+        var locstr = "";
+        var loc = 0;
 
-        //         L.marker([lat, lng], {color: 'blue'}).addTo(app.map);
-        // }
+        for (var i = 0; i < lastindex - 2; i += 2) {
+                loc ++;
+                locstr = "Location ";
 
-        return app.map
+                lat1 = points[i];
+                lng1 = points[i+1];
+
+                lat1 = parseFloat(lat1);
+                lng1 = parseFloat(lng1);
+                
+                locstr = locstr.concat(loc.toString());
+
+                L.marker([lat1, lng1], {color: 'blue'}).addTo(map).bindPopup(locstr).openPopup();
+        }
+
+        return map
 }
 
 ////////////////////////////////////////////////////////////////

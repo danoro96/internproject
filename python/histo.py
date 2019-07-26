@@ -241,6 +241,9 @@ def intersect(p, ang):
 
     y = float(p[1])
 
+    x = round(x, 6)
+    y = round(y, 6)
+
     ret = [x , y]
 
     return ret # in format 1 X 2 [y][x]
