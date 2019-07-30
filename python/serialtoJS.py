@@ -69,9 +69,9 @@ def enoughdecimals(value):
         return True
 
 #open serial port
-ser = serial.Serial()
-ser.baudrate = 9600
-ser.port = "/dev/ttyACM0"
+# ser = serial.Serial()
+# ser.baudrate = 9600
+# ser.port = "/dev/ttyACM0"
 
 # this changes stuff from binary to ASCII
 # currently takes in a file but we can chage it so that it takes in something else
@@ -149,6 +149,8 @@ async def hello(websocket, path):
     tojs = None
     tojs = obj()
     print('I am connected..........')
+    i = 0
+    j = 0
 
     while True:
         print("Running ...")
@@ -158,42 +160,45 @@ async def hello(websocket, path):
         print('received ', ans)
         
         if ans == '0':
+            
             # if we receive a 0 from the web socket we take data
 
             #Run Gnuradio
-            s = subprocess.Popen(["python2", "music.py"])
-            time.sleep(10)
-            s.kill()
+            # s = subprocess.Popen(["python2", "music.py"])
+            # time.sleep(10)
+            # s.kill()
 
             #histogram
-            avg = histo.doitboi()
-            print("GnuRadio calc ang: ", avg) 
-            print("calling serialConn()")
+            # avg = histo.doitboi()
+            # print("GnuRadio calc ang: ", avg) 
+            # print("calling serialConn()")
 
-            separatedData = None
+            # separatedData = None
 
-            separatedData = serialConn()
-
-            print(separatedData)
-            
-            tojs.points.append(float(separatedData[0]))
-            tojs.points.append(float(separatedData[1]))
-            print('first index=',separatedData[0], 'second index=',separatedData[1])
+            # separatedData = serialConn()
+            separatedData = [38.840841, -104.723169, 38.846367, -104.718757]
+            # print(separatedData)
+            print("index num i ", i)
+            tojs.points.append(float(separatedData[0 + i]))
+            tojs.points.append(float(separatedData[1 + i]))
+            print('first index=',separatedData[0 + i], 'second index=',separatedData[1 + i])
 
             # add the compensation with respect to north
-            print(separatedData)
-            northangle = float(separatedData[9])
+            # print(separatedData)
+            # northangle = float(separatedData[9])
 
-            realangle = northangle + avg
+            # realangle = northangle + avg
 
-            if realangle > 360.0:
-                realangle  = realangle - 360.0
-
-            tojs.angles.append(realangle)
-            print('calc angle=', realangle)
-            ser.reset_input_buffer()
-            ser.reset_output_buffer()
-            ser.close()
+            # if realangle > 360.0:
+            #     realangle  = realangle - 360.0
+            realangle = [120.0, 160.0]
+            tojs.angles.append(realangle[j])
+            print('calc angle=', realangle[j])
+            # ser.reset_input_buffer()
+            # ser.reset_output_buffer()
+            # ser.close()
+            i = i + 2
+            j = j + 1
 
 
 

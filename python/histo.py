@@ -218,15 +218,15 @@ def intersect(p, ang):
      # create empty N x 2 array for positions
 
     P0 = np.array([p[0::2], p[1::2]]).transpose()
-
+    ang = np.radians(ang)
     for i in range(len(ang)): # fill n array with values in radians
         for j in range(2):
             if j == 0:
-                n[i][j] = np.sin(ang[i] * np.pi / 180.0)
+                n[i][j] = np.cos(ang[i])
             if j == 1:
-                n[i][j] = np.cos(ang[i] * np.pi / 180.0)
+                n[i][j] = np.sin(ang[i])
 
-
+    print("ang unit vector= ", n)
     #create an array of projectors(perpendicular distance from a point to a line), or the equation I - n*n^T 
     projs = np.eye(n.shape[1]) - n[:,:,np.newaxis]*n[:,np.newaxis]
 

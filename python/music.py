@@ -26,7 +26,7 @@ class run_MUSIC_lin_array_X310_TwinRX(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.input_variables = input_variables = struct({"NumArrayElements": 2, "NormSpacing": 0.33, "SnapshotSize": 2**11, "OverlapSize": 2**9, "NumTargets": 1, "PSpectrumLength": 2**10, "DirectoryConfigFiles": "/home/donnie", "RelativePhaseOffsets": "measure_X310_TwinRX_relative_phase_offsets_245.cfg", })
+        self.input_variables = input_variables = struct({"NumArrayElements": 2, "NormSpacing": 0.45, "SnapshotSize": 2**11, "OverlapSize": 2**9, "NumTargets": 1, "PSpectrumLength": 2**10, "DirectoryConfigFiles": "/home/donnie", "RelativePhaseOffsets": "measure_X310_TwinRX_relative_phase_offsets_245.cfg", })
         self.rel_phase_offsets_file_name = rel_phase_offsets_file_name = os.path.join(input_variables.DirectoryConfigFiles, input_variables.RelativePhaseOffsets)
 
         ##################################################
